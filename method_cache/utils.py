@@ -39,7 +39,7 @@ def cache_method(seconds=0):
                 keys = [method_key, ]
                 cache.set(master_key, keys, seconds)
             else:
-                if not key in keys:
+                if not method_key in keys:
                     keys.append(method_key)
                     cache.set(master_key, keys, seconds)
             
