@@ -7,9 +7,9 @@ A simple app for caching resource intensive methods on models. Automatic invalid
 How It Works
 ===================
 
-django-method-cache has two different ways of caching, the first layer is instance specific as it is on class as a new property or attribute. The second involves memcached (or whatever cache layer you have set for Django). The "keys" are a sha224 hash of the Model name, Model's database ID, method name as well as any *args or **kwargs.
+django-method-cache has two different ways of caching, the first layer is instance specific as it is on class as a new property or attribute. The second involves memcached (or whatever cache layer you have set for Django). The "method keys" are a sha224 hash of the Model name, Model's database ID, method name as well as any *args or **kwargs.
 
-django-method-cache also invalidates all data in the Django persistent cache for that specific model record when you save. Please note that if your method uses data from ForeignKey fields or ManyToMany fields, changes on those respective Models will not result in a cache purge.
+django-method-cache also invalidates all data in the Django persistent cache for that specific model instance (tied to the ID) when you save. It does this by keeping an updated list of "method keys" under a "master key". Please note that if your method uses data from ForeignKey fields or ManyToMany fields, changes on those respective Models will not result in a cache purge (unless you are mindless to call .save() on the original model instance).
 
 
 Examples
