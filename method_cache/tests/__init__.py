@@ -1,0 +1,1 @@
+from method_cache.tests.tests import *

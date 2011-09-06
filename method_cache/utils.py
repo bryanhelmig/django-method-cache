@@ -2,9 +2,11 @@
 def create_master_key(instance):    
     from hashlib import sha224
     
+    key = type(instance).__name__
     if hasattr(instance, "id"):
-        return sha224(type(instance).__name__ + str(instance.id)).hexdigest()
-    return None
+        key += str(instance.id)
+    
+    return sha224( key ).hexdigest()
 
 def cache_method(seconds=0):
     """
@@ -22,14 +24,20 @@ def cache_method(seconds=0):
     def inner_cache(method):
         
         def x(instance, *args, **kwargs):
-            if not hasattr(instance, "id"):
+            if hasattr(instance, "id") and not instance.id:
                 # isn't a saved model yet
                 return method(instance, *args, **kwargs)
             
             # primary
             master_key = create_master_key(instance)
             
-            method_key = sha224(master_key + method.__name__ + str(args) + str(kwargs)).hexdigest()
+            # create method key
+            method_key = master_key + method.__name__ + str(args) + str(kwargs)
+            
+            if hasattr(instance, "lastchanged"):
+                method_key += str(instance.lastchanged)
+            
+            method_key = sha224(method_key).hexdigest()
             
             # in order to keep the cache valid, we create a "master key" which is instance specific
             # and contains a list of current method keys.
