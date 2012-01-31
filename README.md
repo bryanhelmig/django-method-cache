@@ -36,11 +36,14 @@ If you'd rather not cache persistently (for example, you use this method many ti
 
 If you'd like to clear the cache for that row-level model:
 
+    # via save signal
     profile = Profile.objects.get(id=1)
-    profile.save() # via signal
+    profile.save() 
     
+    # via explicit call
     from method_cache.utils import clear_methods
-    clear_methods(profile) # explicit
+    profile = Profile.objects.get(id=1)
+    clear_methods(profile) 
 
 
 ## A more complete example:
