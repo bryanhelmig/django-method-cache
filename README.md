@@ -70,3 +70,7 @@ If you'd like to clear the cache for that row-level model:
     profile.save()
     # or...
     clear_methods(profile)
+
+### Alternatives:
+
+Another Django-centric app for caching methods here: [django-cache-utils](https://bitbucket.org/kmike/django-cache-utils/). It has grouping support for partial invalidation, if you need that.
