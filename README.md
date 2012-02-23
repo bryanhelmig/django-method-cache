@@ -14,62 +14,70 @@ A simple app for caching resource intensive methods on models. Automatic invalid
 
 Generally, this is a very simple app to use. If you wanted to store the result in a more persistent cache like memcached, you would pass the seconds to cache::
 
-    from method_cache.utils import cache_method
+```python
+from method_cache.utils import cache_method
+
+class Profile(models.Model):
+    user = models.OneToOneField(User)
     
-    class Profile(models.Model):
-        user = models.OneToOneField(User)
-        
-        # ...
-        
-        @cache_method(3600)
-        def some_intensive_method(self):
-            # ...
-            return 'cache me!'
-
-If you'd rather not cache persistently (for example, you use this method many times in a request, but the data resides off model), you can signify it by leaving out the seconds argument::
-
-    @cache_method()
+    # ...
+    
+    @cache_method(3600)
     def some_intensive_method(self):
         # ...
         return 'cache me!'
+```
+
+If you'd rather not cache persistently (for example, you use this method many times in a request, but the data resides off model), you can signify it by leaving out the seconds argument::
+
+```python
+@cache_method()
+def some_intensive_method(self):
+    # ...
+    return 'cache me!'
+```
 
 
 If you'd like to clear the cache for that row-level model:
 
-    # via save signal
-    profile = Profile.objects.get(id=1)
-    profile.save() 
-    
-    # via explicit call
-    from method_cache.utils import clear_methods
-    profile = Profile.objects.get(id=1)
-    clear_methods(profile) 
+```python
+# via save signal
+profile = Profile.objects.get(id=1)
+profile.save() 
+
+# via explicit call
+from method_cache.utils import clear_methods
+profile = Profile.objects.get(id=1)
+clear_methods(profile) 
+```
 
 
 ## A more complete example:
 
-    from method_cache.utils import clear_methods
-    
-    profile = Profile.objects.get(id=1)
-    
-    # first call takes a while
-    results = profile.some_intensive_method()
-    
-    # second call is from on model cache
-    results = profile.some_intensive_method()
-    
-    # ...
-    
-    # repull
-    profile = Profile.objects.get(id=1)
-    
-    # third call is from django cache (also sets on model cache)
-    results = profile.some_intensive_method()
-    
-    # to wipe the cache
-    profile.save()
-    # or...
-    clear_methods(profile)
+```python
+from method_cache.utils import clear_methods
+
+profile = Profile.objects.get(id=1)
+
+# first call takes a while
+results = profile.some_intensive_method()
+
+# second call is from on model cache
+results = profile.some_intensive_method()
+
+# ...
+
+# repull
+profile = Profile.objects.get(id=1)
+
+# third call is from django cache (also sets on model cache)
+results = profile.some_intensive_method()
+
+# to wipe the cache
+profile.save()
+# or...
+clear_methods(profile)
+```
 
 ### Alternatives:
 
